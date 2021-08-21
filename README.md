@@ -1,16 +1,18 @@
-# vuetify_todo
+# Vuetify todo
 
-## Project setup
-```
-yarn install
-```
+\* **What is need**
 
-### Compiles and hot-reloads for development
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install)
+
+## Project setup || Compiles and hot-reloads for development
 ```
-yarn serve
+docker-compose up
 ```
 
 ### Compiles and minifies for production
+
+\* ***Inside container*
 ```
 yarn build
 ```
