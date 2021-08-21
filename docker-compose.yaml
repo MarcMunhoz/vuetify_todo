@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  app:
+    build: .
+    image: vuetify-todo_img
+    volumes:
+      - .:/app
+    working_dir: /app
+    container_name: "vuetify-todo_ctn"
+    hostname: "vuetify-todo"
+    ports:
+      - 8080:8080
+    entrypoint: ["yarn", "serve"]
