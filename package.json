@@ -18,6 +18,7 @@
     "@vue/cli-plugin-router": "~4.5.0",
     "@vue/cli-plugin-vuex": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
+    "glob-parent": "^6.0.1",
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
     "sass": "~1.32.0",
@@ -25,5 +26,8 @@
     "vue-cli-plugin-vuetify": "~2.4.2",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.7.0"
+  },
+  "resolutions": {
+    "glob-parent": "^5.1.2"
   }
 }
