@@ -13,7 +13,7 @@ docker-compose up -d
 
 ### Compiles and minifies for production
 
-\* _\*\*Inside container_
+\* **Inside container**
 
 ```
 yarn build
