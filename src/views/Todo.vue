@@ -1,8 +1,10 @@
-<template> </template>
+<template>
+  <h1>Todo</h1>
+</template>
 
 <script>
 export default {
-  name: "Home",
+  name: "Todo",
 
   components: {},
 };
