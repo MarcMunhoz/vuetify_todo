@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div class="px-6 about">
     <h1>About Vuetify Todo</h1>
 
     <p>

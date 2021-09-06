@@ -2,7 +2,7 @@
   <v-app id="inspire">
     <Navigation />
 
-    <v-main class="px-5 text-justify">
+    <v-main class="text-justify">
       <router-view></router-view>
     </v-main>
   </v-app>
