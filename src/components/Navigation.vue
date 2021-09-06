@@ -30,20 +30,15 @@
 
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-app-bar-title>Vuetify Todo</v-app-bar-title>
+      <v-app-bar-title class="px-0">
+        Vuetify Todo<br />
+        <cite class="subtitle-1">{{ today() }}</cite>
+      </v-app-bar-title>
 
       <v-spacer></v-spacer>
 
       <v-btn icon>
         <v-icon>mdi-magnify</v-icon>
-      </v-btn>
-
-      <v-btn icon>
-        <v-icon>mdi-heart</v-icon>
-      </v-btn>
-
-      <v-btn icon>
-        <v-icon>mdi-dots-vertical</v-icon>
       </v-btn>
     </v-app-bar>
   </v-container>
@@ -59,5 +54,11 @@ export default {
       { title: "About", icon: "mdi-help-box", to: "/about" },
     ],
   }),
+  methods: {
+    today() {
+      const today = new Date();
+      return today.toLocaleString("en-US", { year: "numeric", month: "short", day: "numeric" });
+    },
+  },
 };
 </script>
