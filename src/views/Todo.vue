@@ -14,11 +14,24 @@
               <v-list-item-title :class="{ 'text-decoration-line-through': task.done }">{{ task.title }}</v-list-item-title>
             </v-list-item-content>
 
-            <v-list-item-action>
-              <v-btn icon>
-                <v-icon color="primary lighten-1" @click.stop="deleteTask(task.id)">mdi-delete</v-icon>
-              </v-btn>
-            </v-list-item-action>
+            <v-menu>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn dark icon v-bind="attrs" v-on="on">
+                  <v-icon color="primary lighten-1">mdi-dots-vertical</v-icon>
+                </v-btn>
+              </template>
+
+              <v-list>
+                <v-list-item v-for="(item, i) in sideMenu" :key="i">
+                  <v-list-item-title role="button" @click.stop="handleFnCall(item.function, task.id)">
+                    <v-btn icon>
+                      <v-icon color="grey lighten-1">mdi-{{ item.button }}</v-icon>
+                    </v-btn>
+                    {{ item.title }}
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </template>
         </v-list-item>
         <v-divider></v-divider>
@@ -51,25 +64,30 @@ export default {
         active: false,
         text: String,
       },
+      sideMenu: [{ title: "Delete", button: "delete", function: "deleteTask" }],
     };
   },
   methods: {
+    handleFnCall(fnName, taskId) {
+      return this[fnName](taskId);
+    },
     addTask() {
-      const newTask = {
-        id: Date.now(),
-        title: this.newTaskTitle,
-        done: false,
-      };
-
-      this.newTaskTitle === "" ? (this.newTaskTitle = "Please digit the task name") : this.tasks.push(newTask), (this.newTaskTitle = "");
-
-      this.snackbar.text = "Task added!";
-      return (this.snackbar.active = true);
+      if (this.newTaskTitle === "") {
+        return (this.snackbar.text = "Please type a task"), (this.snackbar.active = true);
+      } else {
+        const newTask = {
+          id: Date.now(),
+          title: this.newTaskTitle,
+          done: false,
+        };
+        return this.tasks.push(newTask), (this.newTaskTitle = ""), (this.snackbar.text = "Task added!"), (this.snackbar.active = true);
+      }
     },
     doneTask(taskID) {
       const task = this.tasks.filter((task) => task.id === taskID)[0];
 
-      return (task.done = !task.done);
+      task.done = !task.done;
+      return task.done && ((this.snackbar.text = "Task is done!"), (this.snackbar.active = true));
     },
     deleteTask(taskID) {
       this.tasks = this.tasks.filter((task) => task.id !== taskID);
