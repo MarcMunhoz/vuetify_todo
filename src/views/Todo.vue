@@ -12,6 +12,7 @@
 
             <v-list-item-content>
               <v-list-item-title :class="{ 'text-decoration-line-through': task.done }">{{ task.title }}</v-list-item-title>
+              {{ due }}
             </v-list-item-content>
 
             <v-menu>
@@ -24,19 +25,20 @@
               <v-list>
                 <v-list-item>
                   <v-list-item-title role="button">
-                    <template>
-                      <v-dialog v-model="dialog" max-width="290px">
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-btn icon v-bind="attrs" v-on="on">
+                    <v-dialog ref="dialog" v-model="modal" :return-value.sync="due" persistent width="290px">
+                      <template v-slot:activator="{ on, attrs }">
+                        <div v-bind="attrs" v-on="on">
+                          <v-btn icon>
                             <v-icon color="grey">mdi-calendar-clock</v-icon>
                           </v-btn>
                           Due Date
-                        </template>
-                        <v-card>
-                          <v-date-picker v-model="picker"></v-date-picker>
-                        </v-card>
-                      </v-dialog>
-                    </template>
+                        </div>
+                      </template>
+                      <v-date-picker v-model="due" scrollable>
+                        <v-btn text color="primary" @click="modal = false">Cancel</v-btn>
+                        <v-btn text color="primary" @click="$refs.dialog.save(due)">OK</v-btn>
+                      </v-date-picker>
+                    </v-dialog>
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item v-for="(item, i) in sideMenu" :key="i">
@@ -82,18 +84,13 @@ export default {
         text: String,
       },
       sideMenu: [{ title: "Delete", button: "delete", function: "deleteTask" }],
-      dialog: false,
-      picker: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
+      modal: false,
+      due: null,
     };
   },
   methods: {
     handleFnCall(fnName, taskId) {
       return this[fnName](taskId);
-    },
-    dueDate() {
-      const date = new Date();
-
-      console.log(date);
     },
     addTask() {
       if (this.newTaskTitle === "") {
