@@ -22,10 +22,27 @@
               </template>
 
               <v-list>
+                <v-list-item>
+                  <v-list-item-title role="button">
+                    <template>
+                      <v-dialog v-model="dialog" max-width="290px">
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn icon v-bind="attrs" v-on="on">
+                            <v-icon color="grey">mdi-calendar-clock</v-icon>
+                          </v-btn>
+                          Due Date
+                        </template>
+                        <v-card>
+                          <v-date-picker v-model="picker"></v-date-picker>
+                        </v-card>
+                      </v-dialog>
+                    </template>
+                  </v-list-item-title>
+                </v-list-item>
                 <v-list-item v-for="(item, i) in sideMenu" :key="i">
                   <v-list-item-title role="button" @click.stop="handleFnCall(item.function, task.id)">
                     <v-btn icon>
-                      <v-icon color="grey lighten-1">mdi-{{ item.button }}</v-icon>
+                      <v-icon color="grey">mdi-{{ item.button }}</v-icon>
                     </v-btn>
                     {{ item.title }}
                   </v-list-item-title>
@@ -65,11 +82,18 @@ export default {
         text: String,
       },
       sideMenu: [{ title: "Delete", button: "delete", function: "deleteTask" }],
+      dialog: false,
+      picker: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
     };
   },
   methods: {
     handleFnCall(fnName, taskId) {
       return this[fnName](taskId);
+    },
+    dueDate() {
+      const date = new Date();
+
+      console.log(date);
     },
     addTask() {
       if (this.newTaskTitle === "") {
@@ -78,6 +102,7 @@ export default {
         const newTask = {
           id: Date.now(),
           title: this.newTaskTitle,
+          duedate: Date,
           done: false,
         };
         return this.tasks.push(newTask), (this.newTaskTitle = ""), (this.snackbar.text = "Task added!"), (this.snackbar.active = true);
