@@ -3,7 +3,7 @@
     <v-text-field outlined label="Add task" clearable hide-details v-model="newTaskTitle" @click:append="addTask" @keyup.enter="addTask" append-icon="mdi-plus-circle" class="mb-6"></v-text-field>
 
     <v-list flat class="pt-0">
-      <div v-for="task in tasks" :key="task.id" @click="doneTask(task.id)">
+      <div v-for="(task, i) in tasks" :key="task.id" @click="doneTask(task.id)">
         <v-list-item :class="{ 'blue lighten-5': task.done }">
           <template v-slot:default>
             <v-list-item-action>
@@ -12,8 +12,9 @@
 
             <v-list-item-content>
               <v-list-item-title :class="{ 'text-decoration-line-through': task.done }">{{ task.title }}</v-list-item-title>
-              {{ due }}
             </v-list-item-content>
+
+            <v-list-item-content>{{ task.dueDate }}</v-list-item-content>
 
             <v-menu>
               <template v-slot:activator="{ on, attrs }">
@@ -24,19 +25,17 @@
 
               <v-list>
                 <v-list-item>
-                  <v-list-item-title role="button">
-                    <v-dialog ref="dialog" v-model="modal" :return-value.sync="due" persistent width="290px">
-                      <template v-slot:activator="{ on, attrs }">
-                        <div v-bind="attrs" v-on="on">
-                          <v-btn icon>
-                            <v-icon color="grey">mdi-calendar-clock</v-icon>
-                          </v-btn>
-                          Due Date
-                        </div>
-                      </template>
-                      <v-date-picker v-model="due" scrollable>
-                        <v-btn text color="primary" @click="modal = false">Cancel</v-btn>
-                        <v-btn text color="primary" @click="$refs.dialog.save(due)">OK</v-btn>
+                  <v-list-item-title>
+                    <div role="button" @click="modal = true">
+                      <v-btn icon>
+                        <v-icon color="grey">mdi-calendar-clock</v-icon>
+                      </v-btn>
+                      Due Date
+                    </div>
+                    <v-dialog ref="dialog" v-model="modal" :return-value.sync="task.dueDate" persistent width="290px">
+                      <v-date-picker v-model="task.dueDate" scrollable>
+                        <v-btn text color="primary" @click.stop="modal = false">Cancel</v-btn>
+                        <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.dueDate)">OK</v-btn>
                       </v-date-picker>
                     </v-dialog>
                   </v-list-item-title>
@@ -85,7 +84,6 @@ export default {
       },
       sideMenu: [{ title: "Delete", button: "delete", function: "deleteTask" }],
       modal: false,
-      due: null,
     };
   },
   methods: {
@@ -99,7 +97,7 @@ export default {
         const newTask = {
           id: Date.now(),
           title: this.newTaskTitle,
-          duedate: Date,
+          dueDate: null,
           done: false,
         };
         return this.tasks.push(newTask), (this.newTaskTitle = ""), (this.snackbar.text = "Task added!"), (this.snackbar.active = true);
