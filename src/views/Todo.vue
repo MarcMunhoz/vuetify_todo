@@ -14,7 +14,9 @@
               <v-list-item-title :class="{ 'text-decoration-line-through': task.done }">{{ task.title }}</v-list-item-title>
             </v-list-item-content>
 
-            <v-list-item-content>{{ task.dueDate }}</v-list-item-content>
+            <v-list-item-content v-if="task.dueDate" class="text-right">
+              <v-list-item-title class="caption"><v-icon dense class="mr-1">mdi-calendar-outline</v-icon>{{ computedDue(task.dueDate) }}</v-list-item-title>
+            </v-list-item-content>
 
             <v-menu>
               <template v-slot:activator="{ on, attrs }">
@@ -32,12 +34,6 @@
                       </v-btn>
                       Due Date
                     </div>
-                    <v-dialog ref="dialog" v-model="modal" :return-value.sync="task.dueDate" persistent width="290px">
-                      <v-date-picker v-model="task.dueDate" scrollable>
-                        <v-btn text color="primary" @click.stop="modal = false">Cancel</v-btn>
-                        <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.dueDate)">OK</v-btn>
-                      </v-date-picker>
-                    </v-dialog>
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item v-for="(item, i) in sideMenu" :key="i">
@@ -53,6 +49,12 @@
           </template>
         </v-list-item>
         <v-divider></v-divider>
+        <v-dialog ref="dialog" v-model="modal" :return-value.sync="task.dueDate" persistent width="290px">
+          <v-date-picker v-model="task.dueDate" scrollable>
+            <v-btn text color="primary" @click.stop="modal = false">Cancel</v-btn>
+            <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.dueDate)">OK</v-btn>
+          </v-date-picker>
+        </v-dialog>
       </div>
     </v-list>
 
@@ -87,6 +89,9 @@ export default {
     };
   },
   methods: {
+    computedDue(due) {
+      return new Date(`${due} 00:00`).toLocaleString("en-US", { month: "short", day: "2-digit" });
+    },
     handleFnCall(fnName, taskId) {
       return this[fnName](taskId);
     },
