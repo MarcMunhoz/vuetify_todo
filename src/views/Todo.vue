@@ -50,8 +50,8 @@
         </v-list-item>
         <v-divider></v-divider>
         <v-dialog ref="dialog" v-model="modal" :return-value.sync="task.dueDate" persistent width="290px">
-          <v-date-picker v-model="task.dueDate" scrollable>
-            <v-btn text color="primary" @click.stop="modal = false">Cancel</v-btn>
+          <v-date-picker v-model="task.dueDate" scrollable :min="today()">
+            <v-btn text color="primary" right @click.stop="modal = false">Cancel</v-btn>
             <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.dueDate)">OK</v-btn>
           </v-date-picker>
         </v-dialog>
@@ -89,6 +89,16 @@ export default {
     };
   },
   methods: {
+    today() {
+      const rawToday = new Date();
+      const rawMonth = () => {
+        const month = rawToday.getMonth() + 1;
+
+        return month < 10 ? `0${month}` : month;
+      };
+
+      return `${rawToday.getFullYear()}-${rawMonth()}-${rawToday.getDate()}`;
+    },
     computedDue(due) {
       return new Date(`${due} 00:00`).toLocaleString("en-US", { month: "short", day: "2-digit" });
     },
