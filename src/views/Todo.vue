@@ -28,7 +28,7 @@
               <v-list>
                 <v-list-item>
                   <v-list-item-title>
-                    <div role="button" @click="modal = true">
+                    <div role="button" @click="task.modal = true">
                       <v-btn icon>
                         <v-icon color="grey">mdi-calendar-clock</v-icon>
                       </v-btn>
@@ -49,9 +49,9 @@
           </template>
         </v-list-item>
         <v-divider></v-divider>
-        <v-dialog ref="dialog" v-model="modal" :return-value.sync="task.dueDate" persistent width="290px">
+        <v-dialog ref="dialog" v-model="task.modal" :return-value.sync="task.dueDate" persistent width="290px">
           <v-date-picker v-model="task.dueDate" scrollable :min="today()">
-            <v-btn text color="primary" right @click.stop="modal = false">Cancel</v-btn>
+            <v-btn text color="primary" right @click.stop="task.modal = false">Cancel</v-btn>
             <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.dueDate)">OK</v-btn>
           </v-date-picker>
         </v-dialog>
@@ -85,7 +85,6 @@ export default {
         text: String,
       },
       sideMenu: [{ title: "Delete", button: "delete", function: "deleteTask" }],
-      modal: false,
     };
   },
   methods: {
@@ -109,11 +108,13 @@ export default {
       if (this.newTaskTitle === "") {
         return (this.snackbar.text = "Please type a task"), (this.snackbar.active = true);
       } else {
+        const idDate = Date.parse(new Date()) + (Math.floor(Math.random() * 10000000000000) + 1);
         const newTask = {
-          id: Date.now(),
+          id: idDate,
           title: this.newTaskTitle,
           dueDate: null,
           done: false,
+          modal: false,
         };
         return this.tasks.push(newTask), (this.newTaskTitle = ""), (this.snackbar.text = "Task added!"), (this.snackbar.active = true);
       }
