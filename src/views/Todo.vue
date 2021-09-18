@@ -28,7 +28,17 @@
               <v-list>
                 <v-list-item>
                   <v-list-item-title>
-                    <div role="button" @click="task.modal = true">
+                    <div role="button" @click="(task.modal = true), (dialog = 0)">
+                      <v-btn icon>
+                        <v-icon color="grey">mdi-pencil</v-icon>
+                      </v-btn>
+                      Edit
+                    </div>
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>
+                    <div role="button" @click="(task.modal = true), (dialog = 1)">
                       <v-btn icon>
                         <v-icon color="grey">mdi-calendar-clock</v-icon>
                       </v-btn>
@@ -49,7 +59,16 @@
           </template>
         </v-list-item>
         <v-divider></v-divider>
-        <v-dialog ref="dialog" v-model="task.modal" :return-value.sync="task.dueDate" persistent width="290px">
+        <v-dialog ref="dialog" v-if="dialog === 0" v-model="task.modal" :return-value.sync="task.title" persistent width="290px">
+          <v-card>
+            <v-card-title>Edit task</v-card-title>
+            <v-text-field v-model="task.title" class="pa-5"></v-text-field>
+            <v-btn text color="primary" right @click.stop="task.modal = false">Cancel</v-btn>
+            <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.title)">Save</v-btn>
+          </v-card>
+        </v-dialog>
+
+        <v-dialog ref="dialog" v-else v-model="task.modal" :return-value.sync="task.dueDate" persistent width="290px">
           <v-date-picker v-model="task.dueDate" scrollable :min="today()">
             <v-btn text color="primary" right @click.stop="task.modal = false">Cancel</v-btn>
             <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.dueDate)">OK</v-btn>
@@ -84,10 +103,14 @@ export default {
         active: false,
         text: String,
       },
+      dialog: Number,
       sideMenu: [{ title: "Delete", button: "delete", function: "deleteTask" }],
     };
   },
   methods: {
+    dialogVal() {
+      this.dialog === 0 ? "task.title" : "task.dueDate";
+    },
     today() {
       const rawToday = new Date();
       const rawMonth = () => {
