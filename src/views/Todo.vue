@@ -1,8 +1,10 @@
 <template>
   <div class="todo px-6">
+    <!-- Text field to input a new task -->
     <v-text-field outlined label="Add task" clearable hide-details v-model="newTaskTitle" @click:append="addTask" @keyup.enter="addTask" append-icon="mdi-plus-circle" class="mb-6"></v-text-field>
 
     <v-list flat class="pt-0">
+      <!-- Looping for the tasks -->
       <div v-for="(task, i) in tasks" :key="task.id" @click="doneTask(task.id)">
         <v-list-item :class="{ 'blue lighten-5': task.done }">
           <template v-slot:default>
@@ -63,14 +65,14 @@
           <v-card>
             <v-card-title>Edit task</v-card-title>
             <v-text-field v-model="task.title" class="pa-5"></v-text-field>
-            <v-btn text color="primary" right @click.stop="task.modal = false">Cancel</v-btn>
+            <v-btn text color="primary" @click.stop="task.modal = false">Cancel</v-btn>
             <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.title)">Save</v-btn>
           </v-card>
         </v-dialog>
 
         <v-dialog ref="dialog" v-else v-model="task.modal" :return-value.sync="task.dueDate" persistent width="290px">
           <v-date-picker v-model="task.dueDate" scrollable :min="today()">
-            <v-btn text color="primary" right @click.stop="task.modal = false">Cancel</v-btn>
+            <v-btn text color="primary" @click.stop="task.modal = false">Cancel</v-btn>
             <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.dueDate)">OK</v-btn>
           </v-date-picker>
         </v-dialog>
@@ -112,6 +114,7 @@ export default {
       this.dialog === 0 ? "task.title" : "task.dueDate";
     },
     today() {
+      // Gets the current date and returns "XXXX-XX-XX"
       const rawToday = new Date();
       const rawMonth = () => {
         const month = rawToday.getMonth() + 1;
@@ -122,6 +125,7 @@ export default {
       return `${rawToday.getFullYear()}-${rawMonth()}-${rawToday.getDate()}`;
     },
     computedDue(due) {
+      // Gets the task due date and returns "month, XX"
       return new Date(`${due} 00:00`).toLocaleString("en-US", { month: "short", day: "2-digit" });
     },
     handleFnCall(fnName, taskId) {
@@ -129,8 +133,10 @@ export default {
     },
     addTask() {
       if (this.newTaskTitle === "") {
+        // Checks wether task title was typed and actives the warining snackbar if it isn't
         return (this.snackbar.text = "Please type a task"), (this.snackbar.active = true);
       } else {
+        // Creates the new task object...
         const idDate = Date.parse(new Date()) + (Math.floor(Math.random() * 10000000000000) + 1);
         const newTask = {
           id: idDate,
@@ -139,16 +145,19 @@ export default {
           done: false,
           modal: false,
         };
+        // ... then pushes it into 'tasks' array | Shows the snackbar "ADDED"
         return this.tasks.push(newTask), (this.newTaskTitle = ""), (this.snackbar.text = "Task added!"), (this.snackbar.active = true);
       }
     },
     doneTask(taskID) {
+      // Marks the task as completed and shows the snackbar "DONE"
       const task = this.tasks.filter((task) => task.id === taskID)[0];
 
       task.done = !task.done;
       return task.done && ((this.snackbar.text = "Task is done!"), (this.snackbar.active = true));
     },
     deleteTask(taskID) {
+      // Deletes the task and shows the snackbar "DELETED"
       this.tasks = this.tasks.filter((task) => task.id !== taskID);
 
       this.snackbar.text = "Task removed!";
