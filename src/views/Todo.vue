@@ -66,14 +66,14 @@
             <v-card-title>Edit task</v-card-title>
             <v-text-field v-model="task.title" class="pa-5"></v-text-field>
             <v-btn text color="primary" @click.stop="task.modal = false">Cancel</v-btn>
-            <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.title)">Save</v-btn>
+            <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.title), snackBar('Task updated!')">Save</v-btn>
           </v-card>
         </v-dialog>
 
         <v-dialog ref="dialog" v-else v-model="task.modal" :return-value.sync="task.dueDate" persistent width="290px">
           <v-date-picker v-model="task.dueDate" scrollable :min="today()">
             <v-btn text color="primary" @click.stop="task.modal = false">Cancel</v-btn>
-            <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.dueDate)">OK</v-btn>
+            <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.dueDate), snackBar('Due date is setted!')">OK</v-btn>
           </v-date-picker>
         </v-dialog>
       </div>
@@ -131,10 +131,15 @@ export default {
     handleFnCall(fnName, taskId) {
       return this[fnName](taskId);
     },
+    snackBar(message) {
+      this.snackbar.text = message;
+
+      return (this.snackbar.active = true);
+    },
     addTask() {
       if (this.newTaskTitle === "") {
         // Checks wether task title was typed and actives the warining snackbar if it isn't
-        return (this.snackbar.text = "Please type a task"), (this.snackbar.active = true);
+        return this.snackBar("Please type a task");
       } else {
         // Creates the new task object...
         const idDate = Date.parse(new Date()) + (Math.floor(Math.random() * 10000000000000) + 1);
@@ -146,7 +151,7 @@ export default {
           modal: false,
         };
         // ... then pushes it into 'tasks' array | Shows the snackbar "ADDED"
-        return this.tasks.push(newTask), (this.newTaskTitle = ""), (this.snackbar.text = "Task added!"), (this.snackbar.active = true);
+        return this.tasks.push(newTask), (this.newTaskTitle = ""), this.snackBar("Task added!");
       }
     },
     doneTask(taskID) {
@@ -154,14 +159,13 @@ export default {
       const task = this.tasks.filter((task) => task.id === taskID)[0];
 
       task.done = !task.done;
-      return task.done && ((this.snackbar.text = "Task is done!"), (this.snackbar.active = true));
+      return task.done && this.snackBar("Task is done!");
     },
     deleteTask(taskID) {
       // Deletes the task and shows the snackbar "DELETED"
       this.tasks = this.tasks.filter((task) => task.id !== taskID);
 
-      this.snackbar.text = "Task removed!";
-      return (this.snackbar.active = true);
+      return this.snackBar("Task removed!");
     },
   },
 };
