@@ -64,7 +64,7 @@
         <v-dialog ref="dialog" v-if="dialog === 0" v-model="task.modal" :return-value.sync="task.title" persistent width="290px">
           <v-card>
             <v-card-title>Edit task</v-card-title>
-            <v-text-field v-model="task.title" class="pa-5"></v-text-field>
+            <v-text-field v-model="task.title" @keyup.enter="$refs.dialog[i].save(task.title), snackBar('Task updated!')" class="pa-5"></v-text-field>
             <v-btn text color="primary" @click.stop="task.modal = false">Cancel</v-btn>
             <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.title), snackBar('Task updated!')">Save</v-btn>
           </v-card>
@@ -108,6 +108,11 @@ export default {
       dialog: Number,
       sideMenu: [{ title: "Delete", button: "delete", function: "deleteTask" }],
     };
+  },
+  mounted() {
+    if (localStorage.tasks) {
+      this.tasks = JSON.parse(localStorage.tasks);
+    }
   },
   methods: {
     dialogVal() {
@@ -166,6 +171,14 @@ export default {
       this.tasks = this.tasks.filter((task) => task.id !== taskID);
 
       return this.snackBar("Task removed!");
+    },
+  },
+  watch: {
+    tasks: {
+      handler(addTask) {
+        localStorage.tasks = JSON.stringify(addTask);
+      },
+      deep: true,
     },
   },
 };
