@@ -1,21 +1,58 @@
 <template>
   <div class="px-6 about">
-    <h1>About Vuetify Todo</h1>
+    <h1>About Todo</h1>
 
-    <p>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit laborum consequatur cum adipisci sed nemo, tempora dolorem accusantium neque quibusdam esse? Fuga numquam exercitationem mollitia
-      dolores sed minima earum! Est.
-    </p>
+    <p>This app was created using VueJS 2, Vuetify and Docker.</p>
 
-    <p>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat fugit aut accusamus animi sed nostrum consequuntur quia! Nam soluta nulla nihil aut, quam numquam, ipsam labore quo, maxime
-      ratione deserunt.
-    </p>
+    <p>It's a simple to-do list with:</p>
+    <ul>
+      <li>Add / edit a task</li>
+      <li>Add an expiration date (month / day only)</li>
+      <li>Mark task as completed</li>
+      <li>Delete a task</li>
+    </ul>
+    <v-divider></v-divider>
+
+    <br />
+    <h4>Any help will be welcome. Thanks!</h4>
+    <v-list dense>
+      <v-list-item-group color="primary">
+        <v-list-item v-for="network in networks" :key="network.id" @click="goTo(network.link)">
+          <v-list-item-icon>
+            <v-icon v-text="`mdi-${network.icon}`"></v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title v-text="network.name"></v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list-item-group>
+    </v-list>
   </div>
 </template>
 
 <script>
 export default {
   name: "About",
+  data() {
+    return {
+      networks: [
+        {
+          name: "MarcMunhoz",
+          icon: "github",
+          link: "https://github.com/MarcMunhoz",
+        },
+        {
+          name: "heyMunhoz",
+          icon: "twitter",
+          link: "https://twitter.com/heyMunhoz",
+        },
+      ],
+    };
+  },
+  methods: {
+    goTo(link) {
+      return window.open(link, "network");
+    },
+  },
 };
 </script>
