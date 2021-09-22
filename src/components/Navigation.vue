@@ -47,7 +47,7 @@
     <v-dialog ref="dialog" v-model="modal" :return-value.sync="username" persistent width="290px">
       <v-card>
         <v-card-title>My name</v-card-title>
-        <v-text-field v-model="username" class="pa-5"></v-text-field>
+        <v-text-field v-model="username" class="pa-5" @keyup.enter="$refs.dialog.save(username)"></v-text-field>
         <v-btn text color="primary" @click.stop="modal = false">Cancel</v-btn>
         <v-btn text color="primary" @click.stop="$refs.dialog.save(username)">Okay</v-btn>
       </v-card>
