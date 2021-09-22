@@ -1,7 +1,7 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy= "default-src https:; style-src unsafe-inline"
+    Content-Security-Policy= "default-src https:; style-src 'self' 'unsafe-inline'"
     Feature-Policy= "microphone 'none'; geolocation 'none'"
     Referrer-Policy = "no-referrer-when-downgrade"
     Strict-Transport-Security = "max-age=15552000; includeSubDomains; preload"
