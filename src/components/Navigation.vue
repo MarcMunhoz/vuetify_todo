@@ -38,10 +38,6 @@
       </v-app-bar-title>
 
       <v-spacer></v-spacer>
-
-      <v-btn icon>
-        <v-icon>mdi-magnify</v-icon>
-      </v-btn>
     </v-app-bar>
 
     <v-dialog ref="dialog" v-model="modal" :return-value.sync="username" persistent width="290px">
