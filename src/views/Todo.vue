@@ -4,14 +4,15 @@
     <v-text-field outlined label="Add task" clearable hide-details v-model="newTaskTitle" @click:append="addTask" @keyup.enter="addTask" append-icon="mdi-plus-circle" class="mb-6"></v-text-field>
 
     <v-list flat class="pt-0">
-      <draggable v-model="tasks" ghost-class="ghost">
+      <draggable v-model="tasks" ghost-class="ghost" handle=".handle">
         <transition-group type="transition" name="flip-list">
           <!-- Looping for the tasks -->
           <div class="sortable" v-for="(task, i) in tasks" :key="task.id" @click="doneTask(task.id)">
             <v-list-item :class="{ 'blue lighten-5': task.done }">
               <template v-slot:default>
                 <v-list-item-action>
-                  <v-checkbox :input-value="task.done"></v-checkbox>
+                  <v-checkbox v-if="handle != true" :input-value="task.done"></v-checkbox>
+                  <v-icon color="primary" class="handle" v-else>mdi-drag</v-icon>
                 </v-list-item-action>
 
                 <v-list-item-content>
@@ -58,6 +59,16 @@
                         {{ item.title }}
                       </v-list-item-title>
                     </v-list-item>
+                    <v-list-item>
+                      <v-list-item-title>
+                        <div role="button" @click="handle = true">
+                          <v-btn icon>
+                            <v-icon color="grey">mdi-sort</v-icon>
+                          </v-btn>
+                          Sort
+                        </div>
+                      </v-list-item-title>
+                    </v-list-item>
                   </v-list>
                 </v-menu>
               </template>
@@ -95,6 +106,12 @@
         <v-btn color="pink" text v-bind="attrs" @click="snackbar.active = false"> Close </v-btn>
       </template>
     </v-snackbar>
+
+    <div class="handle-div text-center" v-if="handle">
+      <v-btn fixed bottom close color="primary" @click="handle = false">
+        Done sorting
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -108,6 +125,7 @@ export default {
   },
   data() {
     return {
+      handle: false,
       newTaskTitle: "",
       tasks: [],
       snackbar: {
@@ -192,8 +210,6 @@ export default {
 
 <style lang="less">
 .sortable {
-  cursor: move;
-
   &-drag {
     opacity: 0;
   }
@@ -207,5 +223,13 @@ export default {
   border-left: 4px solid #90caf9;
   box-shadow: 10px 10px 5px -1px hsla(0, 0, 0, 0.14);
   opacity: 0.7;
+}
+
+.handle-div {
+  margin-left: -256px;
+
+  @media screen and (max-width: 776px) {
+    margin-left: -155px;
+  }
 }
 </style>
