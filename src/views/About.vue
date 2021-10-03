@@ -10,6 +10,7 @@
       <li>Add an expiration date (month / day only)</li>
       <li>Mark task as completed</li>
       <li>Delete a task</li>
+      <li>Sort list</li>
     </ul>
     <v-divider></v-divider>
 
