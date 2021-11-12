@@ -21,7 +21,8 @@
 
                 <v-list-item-content v-if="task.dueDate" class="text-right">
                   <v-list-item-title class="caption">
-                    <v-icon dense class="mr-1">mdi-calendar-outline</v-icon>
+                    <v-icon v-if="!task.expired" dense class="mr-1">mdi-calendar-outline</v-icon>
+                    <v-icon v-else dense class="mr-1 error--text">mdi-calendar-alert</v-icon>
                     <span :class="{ 'error--text text-decoration-line-through': task.expired }"> {{ computedDue(task.dueDate) }}</span>
                   </v-list-item-title>
                 </v-list-item-content>
@@ -165,11 +166,6 @@ export default {
     computedDue(due) {
       // Gets the task due date and returns "month, XX"
       return new Date(`${due} GMT-0300`).toLocaleString("en-US", { month: "short", day: "2-digit" });
-    },
-    isexpired() {
-      const x = new Date(`${today()} GMT-0300`).toLocaleString("en-US", { month: "short", day: "2-digit" }) === computedDue(task.dueDate);
-
-      console.log(x);
     },
     handleFnCall(fnName, taskId) {
       return this[fnName](taskId);
