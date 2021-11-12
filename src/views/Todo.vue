@@ -20,7 +20,11 @@
                 </v-list-item-content>
 
                 <v-list-item-content v-if="task.dueDate" class="text-right">
-                  <v-list-item-title class="caption"><v-icon dense class="mr-1">mdi-calendar-outline</v-icon>{{ computedDue(task.dueDate) }}</v-list-item-title>
+                  <v-list-item-title class="caption">
+                    <v-icon v-if="!task.expired" dense class="mr-1">mdi-calendar-outline</v-icon>
+                    <v-icon v-else dense class="mr-1 error--text">mdi-calendar-alert</v-icon>
+                    <span :class="{ 'error--text text-decoration-line-through': task.expired }"> {{ computedDue(task.dueDate) }}</span>
+                  </v-list-item-title>
                 </v-list-item-content>
 
                 <v-menu>
@@ -108,9 +112,7 @@
     </v-snackbar>
 
     <div class="handle-div text-center" v-if="handle">
-      <v-btn fixed bottom close color="primary" @click="handle = false">
-        Done sorting
-      </v-btn>
+      <v-btn fixed bottom close color="primary" @click="handle = false"> Done sorting </v-btn>
     </div>
   </div>
 </template>
@@ -139,6 +141,14 @@ export default {
   mounted() {
     if (localStorage.tasks) {
       this.tasks = JSON.parse(localStorage.tasks);
+
+      const today = new Date(`${this.today()} GMT-0300`).toLocaleString("en-US", { month: "short", day: "2-digit" });
+
+      this.tasks.forEach((e) => {
+        const taskDueDate = new Date(`${e.dueDate} GMT-0300`).toLocaleString("en-US", { month: "short", day: "2-digit" });
+
+        return today > taskDueDate ? (e.expired = true) : (e.expired = false);
+      });
     }
   },
   methods: {
@@ -155,7 +165,7 @@ export default {
     },
     computedDue(due) {
       // Gets the task due date and returns "month, XX"
-      return new Date(`${due} 00:00`).toLocaleString("en-US", { month: "short", day: "2-digit" });
+      return new Date(`${due} GMT-0300`).toLocaleString("en-US", { month: "short", day: "2-digit" });
     },
     handleFnCall(fnName, taskId) {
       return this[fnName](taskId);
@@ -176,6 +186,7 @@ export default {
           id: idDate,
           title: this.newTaskTitle,
           dueDate: null,
+          expired: false,
           done: false,
           modal: false,
         };
@@ -188,7 +199,7 @@ export default {
       const task = this.tasks.filter((task) => task.id === taskID)[0];
 
       task.done = !task.done;
-      return task.done && this.snackBar("Task is done!");
+      return task.done && task.done === true ? this.snackBar("Task is done!") : this.snackBar("Task is incomplete!");
     },
     deleteTask(taskID) {
       // Deletes the task and shows the snackbar "DELETED"
