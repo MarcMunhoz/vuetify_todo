@@ -199,7 +199,7 @@ export default {
       const task = this.tasks.filter((task) => task.id === taskID)[0];
 
       task.done = !task.done;
-      return task.done && this.snackBar("Task is done!");
+      return task.done && task.done === true ? this.snackBar("Task is done!") : this.snackBar("Task is incomplete!");
     },
     deleteTask(taskID) {
       // Deletes the task and shows the snackbar "DELETED"
