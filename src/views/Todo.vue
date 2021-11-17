@@ -19,11 +19,11 @@
                   <v-list-item-title :class="{ 'text-decoration-line-through': task.done }">{{ task.title }}</v-list-item-title>
                 </v-list-item-content>
 
-                <v-list-item-content v-if="task.dueDate" class="text-right">
+                <v-list-item-content v-if="task.dueDate" class="text-right text-uppercase">
                   <v-list-item-title class="caption">
-                    <v-icon v-if="!task.expired" dense class="mr-1">mdi-calendar-outline</v-icon>
-                    <v-icon v-else dense class="mr-1 error--text">mdi-calendar-alert</v-icon>
-                    <span :class="{ 'error--text text-decoration-line-through': task.expired }"> {{ computedDue(task.dueDate) }}</span>
+                    <v-icon v-if="!task.expired || task.done" dense class="mr-1">mdi-calendar-outline</v-icon>
+                    <v-icon v-else-if="!task.done" dense class="mr-1 error--text">mdi-calendar-alert</v-icon>
+                    <span :class="{ 'error--text font-weight-bold': task.expired && !task.done }"> {{ computedDue(task.dueDate) }}</span>
                   </v-list-item-title>
                 </v-list-item-content>
 
