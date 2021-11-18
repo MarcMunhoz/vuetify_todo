@@ -142,10 +142,10 @@ export default {
     if (localStorage.tasks) {
       this.tasks = JSON.parse(localStorage.tasks);
 
-      const today = new Date(`${this.today()} GMT-0300`).toLocaleString("en-US", { month: "short", day: "2-digit" });
+      const today = new Date(`${this.today()} GMT-0300`);
 
       this.tasks.forEach((e) => {
-        const taskDueDate = new Date(`${e.dueDate} GMT-0300`).toLocaleString("en-US", { month: "short", day: "2-digit" });
+        const taskDueDate = new Date(`${e.dueDate} GMT-0300`);
 
         return today > taskDueDate ? (e.expired = true) : (e.expired = false);
       });
