@@ -33,6 +33,8 @@
     "glob-parent": "^5.1.2",
     "set-value": "^4.0.1",
     "css-select": "~4.1.3",
-    "ansi-regex": "^5.0.1"
+    "ansi-regex": "^5.0.1",
+    "json-schema": "0.4.0",
+    "node-forge": "^1.0.0"
   }
 }
