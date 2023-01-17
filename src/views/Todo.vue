@@ -22,7 +22,7 @@
                 <v-list-item-content v-if="task.dueDate" class="text-right text-uppercase">
                   <v-list-item-title class="caption">
                     <v-icon v-if="!task.expired || task.done" dense class="mr-1">mdi-calendar-outline</v-icon>
-                    <v-icon v-else-if="!task.done" dense class="mr-1 error--text">mdi-calendar-alert</v-icon>
+                    <v-icon v-else-if="!task.done && task.expired" dense class="mr-1 error--text">mdi-calendar-alert</v-icon>
                     <span :class="{ 'error--text font-weight-bold': task.expired && !task.done }"> {{ computedDue(task.dueDate) }}</span>
                   </v-list-item-title>
                 </v-list-item-content>
@@ -81,16 +81,16 @@
             <v-dialog ref="dialog" v-if="dialog === 0" v-model="task.modal" :return-value.sync="task.title" persistent width="290px">
               <v-card>
                 <v-card-title>Edit task</v-card-title>
-                <v-text-field v-model="task.title" @keyup.enter="$refs.dialog[i].save(task.title), snackBar('Task updated!')" class="pa-5"></v-text-field>
+                <v-text-field v-model="task.title" @keyup.enter="saveTask($refs, i, task.title, 'Task updated!')" class="pa-5"></v-text-field>
                 <v-btn text color="primary" @click.stop="task.modal = false">Cancel</v-btn>
-                <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.title), snackBar('Task updated!')">Save</v-btn>
+                <v-btn text color="primary" @click.stop="saveTask($refs, i, task.title, 'Task updated!')">Save</v-btn>
               </v-card>
             </v-dialog>
 
             <v-dialog ref="dialog" v-else v-model="task.modal" :return-value.sync="task.dueDate" persistent width="290px">
               <v-date-picker v-model="task.dueDate" scrollable :min="today()">
                 <v-btn text color="primary" @click.stop="task.modal = false">Cancel</v-btn>
-                <v-btn text color="primary" @click.stop="$refs.dialog[i].save(task.dueDate), snackBar('Due date is setted!')">OK</v-btn>
+                <v-btn text color="primary" @click.stop="saveTask($refs, i, task.dueDate, 'Due date is setted!')">OK</v-btn>
               </v-date-picker>
             </v-dialog>
           </div>
@@ -193,6 +193,10 @@ export default {
         // ... then pushes it into 'tasks' array | Shows the snackbar "ADDED"
         return this.tasks.push(newTask), (this.newTaskTitle = ""), this.snackBar("Task added!");
       }
+    },
+    saveTask(refs, index, obj, message) {
+      // Gets refs, object to save (title or due date), message and saves the task
+      return refs.dialog[index].save(obj), this.snackBar(message);
     },
     doneTask(taskID) {
       // Marks the task as completed and shows the snackbar "DONE"
