@@ -12,3 +12,4 @@ services:
     ports:
       - 8080:8080
     entrypoint: ["yarn", "serve"]
+    # entrypoint: ["sh", "-c", "sleep 2073600"]
