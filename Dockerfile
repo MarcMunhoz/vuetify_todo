@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:22-alpine
 
 LABEL author="Marcelo Munhoz <me@marcelomunhoz.com>" \
   modified="2025-05-27"
