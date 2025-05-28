@@ -1,10 +1,13 @@
-FROM node:18-alpine
+FROM node:22-alpine
+
+LABEL author="Marcelo Munhoz <me@marcelomunhoz.com>" \
+  modified="2025-05-27"
 
 ARG APP_PATH=/app
 
 ENV PORT=8080
 
-COPY ["package.json", "yarn.lock", "./"]
+COPY ["./app/package.json", "./app/yarn.lock", "./"]
 
 RUN yarn global add @vue/cli-service \
   && yarn \
