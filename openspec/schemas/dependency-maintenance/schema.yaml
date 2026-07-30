@@ -1,0 +1,136 @@
+name: dependency-maintenance
+version: 1
+description: Atualização segura de dependências e correção de vulnerabilidades
+
+artifacts:
+  - id: proposal
+    generates: proposal.md
+    description: Proposta de atualização de dependências e correção de vulnerabilidades
+    template: proposal.md
+    instruction: |
+      Analise o projeto antes de elaborar a proposta.
+
+      Identifique:
+
+      - linguagem, runtime e versões utilizadas;
+      - gerenciador de pacotes e arquivo de lock;
+      - presença de Docker, Docker Compose ou outra forma de containerização;
+      - limitações impostas pela imagem base ou pelo ambiente;
+      - dependências diretas e transitivas desatualizadas;
+      - atualizações major disponíveis;
+      - repositório remoto associado ao projeto;
+      - alertas abertos do Dependabot obtidos diretamente do GitHub, quando houver autenticação e permissão disponíveis;
+      - alertas ou links adicionais fornecidos pelo usuário;
+      - vulnerabilidades adicionais encontradas por auditoria local;
+      - mecanismos de validação existentes no projeto.
+
+      Não conclua que o projeto não possui alertas do Dependabot apenas pela ausência
+      de `.github/dependabot.yml`. Esse arquivo não é necessário para a existência
+      de alertas de segurança.
+
+      Quando o projeto possuir um repositório remoto no GitHub, tente consultar os
+      alertas reais em `OWNER/REPO/security/dependabot` ou pela API do GitHub.
+
+      Priorize a API ou o GitHub CLI autenticado para obter dados estruturados. Caso
+      não haja autenticação, permissão ou acesso ao repositório, registre essa
+      limitação e utilize a auditoria local como fonte complementar.
+
+      A proposta deve buscar a atualização máxima tecnicamente possível,
+      incluindo versões major quando viáveis, sem comprometer o funcionamento
+      da aplicação.
+
+      Não presuma que o projeto possui lint, verificação de tipos ou testes
+      automatizados. Considere apenas as ferramentas realmente existentes.
+
+      Não implemente alterações durante a criação da proposta.
+    requires: []
+
+  - id: specs
+    generates: specs/**/*.md
+    description: Requisitos verificáveis da manutenção de dependências
+    template: specs/spec.md
+    instruction: |
+      Defina requisitos e cenários verificáveis para:
+
+      - inspeção do ambiente e da estrutura do projeto;
+      - atualização de dependências diretas e transitivas;
+      - avaliação e aplicação de atualizações major;
+      - análise dos alertas do Dependabot;
+      - auditoria local de vulnerabilidades;
+      - correção das CVEs aplicáveis;
+      - preservação do comportamento existente;
+      - execução dos mecanismos de validação disponíveis;
+      - documentação de atualizações ou vulnerabilidades que não possam ser
+        resolvidas com segurança.
+
+      Não exija lint, testes, typecheck ou outras ferramentas que não existam
+      no projeto.
+
+      Na ausência de testes automatizados, exija a melhor validação funcional
+      possível com a estrutura disponível.
+    requires:
+      - proposal
+
+  - id: design
+    generates: design.md
+    description: Estratégia técnica para atualização e validação
+    template: design.md
+    instruction: |
+      Descreva a estratégia técnica de atualização.
+
+      Considere:
+
+      - ordem de atualização do runtime, gerenciador e dependências;
+      - impacto da containerização e da imagem base;
+      - tratamento de breaking changes;
+      - atualização progressiva de dependências;
+      - peer dependencies e dependências transitivas;
+      - uso de overrides ou resolutions somente quando justificado;
+      - auditoria antes e depois das alterações;
+      - mecanismos de validação realmente existentes;
+      - validação funcional quando não houver testes automatizados;
+      - riscos, exceções e estratégia de reversão.
+
+      Não proponha instalar ferramentas de lint ou testes apenas para cumprir
+      esta manutenção, salvo quando isso for solicitado ou aprovado
+      explicitamente.
+    requires:
+      - specs
+
+  - id: tasks
+    generates: tasks.md
+    description: Checklist executável da manutenção
+    template: tasks.md
+    instruction: |
+      Gere tarefas ordenadas, específicas e verificáveis.
+
+      As tarefas devem incluir, quando aplicável:
+
+      - inspeção inicial do projeto;
+      - registro das versões atuais;
+      - auditoria inicial;
+      - análise dos alertas do Dependabot;
+      - atualização do runtime ou imagem base;
+      - atualização do gerenciador de pacotes;
+      - atualização de dependências diretas;
+      - atualização de dependências transitivas;
+      - tratamento de breaking changes;
+      - correção de vulnerabilidades;
+      - atualização consistente do lockfile;
+      - execução de build, lint, typecheck e testes somente quando existirem;
+      - validação da inicialização e dos fluxos críticos;
+      - auditoria final;
+      - documentação de exceções e riscos residuais.
+
+      Não gere tarefas genéricas como apenas "atualizar pacotes" ou
+      "testar aplicação".
+
+      Não crie tarefas para instalar ferramentas de validação inexistentes sem
+      autorização explícita.
+    requires:
+      - design
+
+apply:
+  requires:
+    - tasks
+  tracks: tasks.md
