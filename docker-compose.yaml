@@ -8,6 +8,6 @@ services:
     container_name: "vuetify-todo_ctn"
     hostname: "vuetify-todo"
     ports:
-      - 8080:8080
+      - 8080:5173
     entrypoint: [ "yarn", "serve" ]
     # entrypoint: ["sh", "-c", "sleep 2073600"]

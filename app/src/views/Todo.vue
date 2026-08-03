@@ -1,124 +1,91 @@
 <template>
   <div class="todo px-6">
-    <!-- Text field to input a new task -->
-    <v-text-field outlined label="Add task" clearable hide-details v-model="newTaskTitle" @click:append="addTask" @keyup.enter="addTask" append-icon="mdi-plus-circle" class="mb-6"></v-text-field>
+    <v-text-field v-model="newTaskTitle" variant="outlined" label="Add task" clearable hide-details append-inner-icon="mdi-plus-circle" class="mb-6" @click:append-inner="addTask" @keyup.enter="addTask"></v-text-field>
 
-    <v-list flat class="pt-0">
-      <draggable v-model="tasks" ghost-class="ghost" handle=".handle">
-        <transition-group type="transition" name="flip-list">
-          <!-- Looping for the tasks -->
-          <div class="sortable" v-for="(task, i) in tasks" :key="task.id" @click="doneTask(task.id)">
-            <v-list-item :class="{ 'blue lighten-5': task.done }">
-              <template v-slot:default>
-                <v-list-item-action>
-                  <v-checkbox v-if="handle != true" :input-value="task.done"></v-checkbox>
-                  <v-icon color="primary" class="handle" v-else>mdi-drag</v-icon>
-                </v-list-item-action>
+    <v-list class="pt-0">
+      <draggable v-model="tasks" item-key="id" ghost-class="ghost" handle=".handle">
+        <template #item="{ element: task }">
+          <div class="sortable" @click="doneTask(task.id)">
+            <v-list-item :class="{ 'bg-blue-lighten-5': task.done }">
+              <template #prepend>
+                <v-checkbox-btn v-if="handle !== true" :model-value="task.done" @click.stop="doneTask(task.id)"></v-checkbox-btn>
+                <v-icon v-else color="primary" class="handle">mdi-drag</v-icon>
+              </template>
 
-                <v-list-item-content>
-                  <v-list-item-title :class="{ 'text-decoration-line-through': task.done }">{{ task.title }}</v-list-item-title>
-                </v-list-item-content>
+              <v-list-item-title :class="{ 'text-decoration-line-through': task.done }">{{ task.title }}</v-list-item-title>
 
-                <v-list-item-content v-if="task.dueDate" class="text-right text-uppercase">
-                  <v-list-item-title class="caption">
-                    <v-icon v-if="!task.expired || task.done" dense class="mr-1">mdi-calendar-outline</v-icon>
-                    <v-icon v-else-if="!task.done && task.expired" dense class="mr-1 error--text">mdi-calendar-alert</v-icon>
-                    <span :class="{ 'error--text font-weight-bold': task.expired && !task.done }"> {{ computedDue(task.dueDate) }}</span>
-                  </v-list-item-title>
-                </v-list-item-content>
+              <template #append>
+                <div v-if="task.dueDate" class="text-right text-uppercase mr-2">
+                  <v-icon v-if="!task.expired || task.done" size="small" class="mr-1">mdi-calendar-outline</v-icon>
+                  <v-icon v-else-if="!task.done && task.expired" size="small" class="mr-1 text-error">mdi-calendar-alert</v-icon>
+                  <span :class="{ 'text-error font-weight-bold': task.expired && !task.done }"> {{ computedDue(task.dueDate) }}</span>
+                </div>
 
                 <v-menu>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn dark icon v-bind="attrs" v-on="on">
-                      <v-icon color="primary lighten-1">mdi-dots-vertical</v-icon>
-                    </v-btn>
+                  <template #activator="{ props }">
+                    <v-btn icon="mdi-dots-vertical" variant="text" color="primary" v-bind="props" @click.stop></v-btn>
                   </template>
 
                   <v-list>
-                    <v-list-item>
-                      <v-list-item-title>
-                        <div role="button" @click="(task.modal = true), (dialog = 0)">
-                          <v-btn icon>
-                            <v-icon color="grey">mdi-pencil</v-icon>
-                          </v-btn>
-                          Edit
-                        </div>
-                      </v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title>
-                        <div role="button" @click="(task.modal = true), (dialog = 1)">
-                          <v-btn icon>
-                            <v-icon color="grey">mdi-calendar-clock</v-icon>
-                          </v-btn>
-                          Due Date
-                        </div>
-                      </v-list-item-title>
-                    </v-list-item>
-                    <v-list-item v-for="(item, i) in sideMenu" :key="i">
-                      <v-list-item-title role="button" v-if="(item.title = 'Delete')" @click.stop="handleFnCall(item.function, task.id)">
-                        <v-btn icon>
-                          <v-icon color="grey">mdi-{{ item.button }}</v-icon>
-                        </v-btn>
-                        {{ item.title }}
-                      </v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title>
-                        <div role="button" @click="handle = true">
-                          <v-btn icon>
-                            <v-icon color="grey">mdi-sort</v-icon>
-                          </v-btn>
-                          Sort
-                        </div>
-                      </v-list-item-title>
-                    </v-list-item>
+                    <v-list-item prepend-icon="mdi-pencil" title="Edit" @click.stop="openEditDialog(task)"></v-list-item>
+                    <v-list-item prepend-icon="mdi-calendar-clock" title="Due Date" @click.stop="openDueDateDialog(task)"></v-list-item>
+                    <v-list-item prepend-icon="mdi-delete" title="Delete" @click.stop="deleteTask(task.id)"></v-list-item>
+                    <v-list-item prepend-icon="mdi-sort" title="Sort" @click.stop="handle = true"></v-list-item>
                   </v-list>
                 </v-menu>
               </template>
             </v-list-item>
             <v-divider></v-divider>
-            <v-dialog ref="dialog" v-if="dialog === 0" v-model="task.modal" :return-value.sync="task.title" persistent width="290px">
-              <v-card>
-                <v-card-title>Edit task</v-card-title>
-                <v-text-field v-model="task.title" @keyup.enter="saveTask($refs, i, task.title, 'Task updated!')" class="pa-5"></v-text-field>
-                <v-btn text color="primary" @click.stop="task.modal = false">Cancel</v-btn>
-                <v-btn text color="primary" @click.stop="saveTask($refs, i, task.title, 'Task updated!')">Save</v-btn>
-              </v-card>
-            </v-dialog>
-
-            <v-dialog ref="dialog" v-else v-model="task.modal" :return-value.sync="task.dueDate" persistent width="290px">
-              <v-date-picker v-model="task.dueDate" scrollable :min="today()">
-                <v-btn text color="primary" @click.stop="task.modal = false">Cancel</v-btn>
-                <v-btn text color="primary" @click.stop="saveTask($refs, i, task.dueDate, 'Due date is setted!')">OK</v-btn>
-              </v-date-picker>
-            </v-dialog>
           </div>
-        </transition-group>
+        </template>
       </draggable>
     </v-list>
 
-    <div v-if="tasks.length === 0" class="my-auto text-center green--text">
-      <v-icon x-large class="green--text">mdi-check-all</v-icon>
+    <v-dialog v-model="editDialog" persistent width="290px">
+      <v-card>
+        <v-card-title>Edit task</v-card-title>
+        <v-text-field v-model="draftTitle" class="pa-5" @keyup.enter="saveTitle"></v-text-field>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn variant="text" color="primary" @click.stop="closeDialogs">Cancel</v-btn>
+          <v-btn variant="text" color="primary" @click.stop="saveTitle">Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dueDateDialog" persistent width="320px">
+      <v-card>
+        <v-date-picker v-model="draftDueDate" :min="today()"></v-date-picker>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn variant="text" color="primary" @click.stop="closeDialogs">Cancel</v-btn>
+          <v-btn variant="text" color="primary" @click.stop="saveDueDate">OK</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <div v-if="tasks.length === 0" class="my-auto text-center text-green">
+      <v-icon size="x-large" class="text-green">mdi-check-all</v-icon>
       <h1>No tasks</h1>
     </div>
 
     <v-snackbar v-model="snackbar.active">
       {{ snackbar.text }}
 
-      <template v-slot:action="{ attrs }">
-        <v-btn color="pink" text v-bind="attrs" @click="snackbar.active = false"> Close </v-btn>
+      <template #actions>
+        <v-btn color="pink" variant="text" @click="snackbar.active = false"> Close </v-btn>
       </template>
     </v-snackbar>
 
     <div class="handle-div text-center" v-if="handle">
-      <v-btn fixed bottom close color="primary" @click="handle = false"> Done sorting </v-btn>
+      <v-btn class="done-sorting" color="primary" @click="handle = false"> Done sorting </v-btn>
     </div>
   </div>
 </template>
 
 <script>
 import draggable from "vuedraggable";
+import { formatDueDate, normalizeTask, normalizeTasks, todayISO } from "@/utils/tasks";
 
 export default {
   name: "Todo",
@@ -134,41 +101,24 @@ export default {
         active: false,
         text: String,
       },
-      dialog: Number,
-      sideMenu: [{ title: "Delete", button: "delete", function: "deleteTask" }],
+      selectedTaskId: null,
+      draftTitle: "",
+      draftDueDate: null,
+      editDialog: false,
+      dueDateDialog: false,
     };
   },
   mounted() {
     if (localStorage.tasks) {
-      this.tasks = JSON.parse(localStorage.tasks);
-
-      const today = new Date(`${this.today()} GMT-0300`);
-
-      this.tasks.forEach((e) => {
-        const taskDueDate = new Date(`${e.dueDate} GMT-0300`);
-
-        return today > taskDueDate ? (e.expired = true) : (e.expired = false);
-      });
+      this.tasks = normalizeTasks(JSON.parse(localStorage.tasks));
     }
   },
   methods: {
     today() {
-      // Gets the current date and returns "XXXX-XX-XX"
-      const rawToday = new Date();
-      const rawMonth = () => {
-        const month = rawToday.getMonth() + 1;
-
-        return month < 10 ? `0${month}` : month;
-      };
-
-      return `${rawToday.getFullYear()}-${rawMonth()}-${rawToday.getDate()}`;
+      return todayISO();
     },
     computedDue(due) {
-      // Gets the task due date and returns "month, XX"
-      return new Date(`${due} GMT-0300`).toLocaleString("en-US", { month: "short", day: "2-digit" });
-    },
-    handleFnCall(fnName, taskId) {
-      return this[fnName](taskId);
+      return formatDueDate(due);
     },
     snackBar(message) {
       this.snackbar.text = message;
@@ -194,9 +144,46 @@ export default {
         return this.tasks.push(newTask), (this.newTaskTitle = ""), this.snackBar("Task added!");
       }
     },
-    saveTask(refs, index, obj, message) {
-      // Gets refs, object to save (title or due date), message and saves the task
-      return refs.dialog[index].save(obj), this.snackBar(message);
+    openEditDialog(task) {
+      this.selectedTaskId = task.id;
+      this.draftTitle = task.title;
+      this.editDialog = true;
+    },
+    openDueDateDialog(task) {
+      this.selectedTaskId = task.id;
+      this.draftDueDate = task.dueDate;
+      this.dueDateDialog = true;
+    },
+    selectedTask() {
+      return this.tasks.find((task) => task.id === this.selectedTaskId);
+    },
+    closeDialogs() {
+      this.selectedTaskId = null;
+      this.draftTitle = "";
+      this.draftDueDate = null;
+      this.editDialog = false;
+      this.dueDateDialog = false;
+    },
+    saveTitle() {
+      const task = this.selectedTask();
+
+      if (task) {
+        task.title = this.draftTitle;
+      }
+
+      this.closeDialogs();
+      return this.snackBar("Task updated!");
+    },
+    saveDueDate() {
+      const task = this.selectedTask();
+
+      if (task) {
+        const dueDate = this.draftDueDate ? (typeof this.draftDueDate === "string" ? this.draftDueDate.slice(0, 10) : todayISO(this.draftDueDate)) : null;
+        Object.assign(task, normalizeTask({ ...task, dueDate }));
+      }
+
+      this.closeDialogs();
+      return this.snackBar("Due date is setted!");
     },
     doneTask(taskID) {
       // Marks the task as completed and shows the snackbar "DONE"
@@ -223,11 +210,9 @@ export default {
 };
 </script>
 
-<style lang="less">
-.sortable {
-  &-drag {
-    opacity: 0;
-  }
+<style>
+.sortable-drag {
+  opacity: 0;
 }
 
 .flip-list-move {
@@ -246,5 +231,12 @@ export default {
   @media screen and (max-width: 776px) {
     margin-left: -155px;
   }
+}
+
+.done-sorting {
+  bottom: 16px;
+  left: 50%;
+  position: fixed;
+  transform: translateX(-50%);
 }
 </style>
