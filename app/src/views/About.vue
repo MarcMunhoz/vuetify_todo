@@ -2,7 +2,7 @@
   <div class="px-6 about">
     <h1>About Todo</h1>
 
-    <p>This app was created using VueJS 2, Vuetify and Docker.</p>
+    <p>This app was created using Vue 3, Vuetify 3, Vite and Docker.</p>
 
     <p>It's a simple to-do list with:</p>
     <ul>
@@ -16,17 +16,8 @@
 
     <br />
     <h4>Any help will be welcome. Thanks!</h4>
-    <v-list dense>
-      <v-list-item-group color="primary">
-        <v-list-item v-for="network in networks" :key="network.id" @click="goTo(network.link)">
-          <v-list-item-icon>
-            <v-icon v-text="`mdi-${network.icon}`"></v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title v-text="network.name"></v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
+    <v-list density="compact">
+      <v-list-item v-for="network in networks" :key="network.name" :prepend-icon="`mdi-${network.icon}`" :title="network.name" color="primary" @click="goTo(network.link)"></v-list-item>
     </v-list>
   </div>
 </template>

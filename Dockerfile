@@ -7,13 +7,12 @@ ARG APP_PATH=/app
 
 ENV PORT=8080
 
+WORKDIR $APP_PATH
+
 COPY ["./app/package.json", "./app/yarn.lock", "./"]
 
-RUN yarn global add @vue/cli-service \
-  && yarn \
+RUN yarn \
   && rm -rf /var/cache/apk/* /tmp/* /var/tmp/* /usr/share/man
-
-WORKDIR $APP_PATH
 
 VOLUME $APP_PATH
 
