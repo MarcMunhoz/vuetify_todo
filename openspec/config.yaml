@@ -1,20 +1,29 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  Project: Browser-based todo application with localStorage persistence.
+  Stack: Vue 3, Vuetify 3, Vue Router 4, Vite 8, and Vitest 4.
+  Runtime: Node.js 22 with Yarn 1, executed through Docker Compose.
+  Source layout: Application code, package manifest, lockfile, and tests live under app/.
+  Commands: Run package-manager scripts only inside the app container; never on the host.
+  Workflow: Follow propose → apply → sync → archive, synchronizing delta specs before archival.
+  Scope: Preserve existing localStorage keys and avoid application or dependency changes unless explicitly required.
+  Language: Write repository documentation and OpenSpec artifacts in English unless the task requires otherwise.
+  Privacy: Use repository-relative references and exclude local paths, usernames, hostnames, private URLs, credentials, keys, and other sensitive data.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+rules:
+  proposal:
+    - Keep the change focused on the requested outcome and state explicit non-goals when scope boundaries matter.
+    - Identify every affected capability and distinguish behavioral requirements from implementation-only work.
+    - State whether application behavior, dependencies, manifests, or lockfiles are expected to change.
+  design:
+    - Explain decisions, rejected alternatives, migration steps, rollback, and preservation constraints.
+    - Keep all file references repository-relative and free of machine-specific or sensitive information.
+  specs:
+    - Express requirements with SHALL or MUST and include testable WHEN/THEN scenarios.
+    - Specify observable behavior and compatibility constraints rather than internal implementation details.
+  tasks:
+    - Use small, ordered, verifiable checkbox tasks that map back to the design and specifications.
+    - Run package-manager validation only inside the app container and never install dependencies without explicit permission.
+    - Include strict OpenSpec validation, sensitive-data scanning, and Git whitespace validation when applicable.
+    - Synchronize every delta specification before archiving the completed change.
